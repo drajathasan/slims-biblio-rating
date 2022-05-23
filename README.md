@@ -1,5 +1,5 @@
 # SLiMS Biblio Rating
-1. Download pluginnya [disini](#)
+1. Download pluginnya [disini](https://github.com/drajathasan/slims-biblio-rating/releases/download/v1.0.0/slims-biblio-rating.zip)
 2. Ekstrak file yang sudah didownload di folder plugins/
 3. Aktifkan pada modul System pada menu Plugins dengan nama "Biblio Rating".
 4. Apabila setelah diaktifkan, tetapi tidak muncul sepert ini
