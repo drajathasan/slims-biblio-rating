@@ -3,8 +3,9 @@
  * @Created by          : Waris Agung Widodo (ido.alit@gmail.com)
  * @Date                : 2019-01-30 00:58
  * @File name           : detail_template.php
+ * @modify by           : Drajat Hasan (drajathasan20@gmail.com)
  */
-include_once __DIR__ . DS . 'helper.php';
+include_once __DIR__ . DS . '..' . DS . 'helper.php';
 
 if (isset($_POST['rateIt']))
 {

@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-22 21:40:01
- * @modify date 2022-05-22 23:24:55
+ * @modify date 2022-05-23 10:09:12
  * @license GPLv3
  * @desc [description]
  */
@@ -14,10 +14,14 @@ if (!function_exists('setBiblioRating'))
 {
     function setBiblioRating($biblio_id, $star)
     {
+        // create database instance with PDO
         $db = DB::getInstance();
+
+        // Convert to int, just make it safe
         $star = (int)$star;
         $url = $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING'];
 
+        // Csrf token check for rating
         if (!\Volnix\CSRF\CSRF::validate($_POST, 'rating_csrf')) {
             session_unset();
             echo '<script type="text/javascript">';
@@ -27,29 +31,48 @@ if (!function_exists('setBiblioRating'))
             exit();
         }
 
-        $existsState = $db->prepare('select `biblio_id` from `biblio_rating` where `biblio_id` = ?');
+        // Checking data
+        $existsState = $db->prepare('select `id`,`biblio_id` from `biblio_rating` where `biblio_id` = ?');
         $existsState->execute([$biblio_id]);
 
+        // Set state based on available data
         $state = 'insert into';
         if ($existsState->rowCount() === 1) $state = 'update';
         
+        // Set query
         $SQL = "{$state} `biblio_rating` set `{$star}` = `{$star}` + 1";
 
+        // Set criteria
         if ($state === 'insert into') $SQL .= ', `biblio_id` = ?';
         if ($state === 'update') $SQL .= " where `biblio_id` = ?";
 
-
+        // set prepare statement
         $statement = $db->prepare($SQL);
         $statement->execute([$biblio_id]);
 
-        // utility::jsAlert($SQL); // debug
+        // set ip
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+
+        // set prepare data to insert log
+        $logState = $db->prepare('insert into `biblio_rating_log` set `biblio_rating_id` = ?, `star` = ?, `ip` = ?');
+        if ($state === 'insert into')
+        {
+            $lastId = $db->lastInsertId();
+            $logState->execute([$lastId, $star, $ip]);
+        }
+        else
+        {
+            $lastData = $existsState->fetch(PDO::FETCH_OBJ);
+            $logState->execute([$lastData->id, $star, $ip]);
+        }
 
         utility::jsAlert('Terimkasih untuk penilaian anda');
 
         echo '<script type="text/javascript">';
         echo 'location.href = \'' . $url . '\';';
         echo '</script>';
-        exit();
+        exit;
     }
 }
 
@@ -143,5 +166,28 @@ if (!function_exists('generateRating'))
             </div>
             <hr>
         <?php
+    }
+}
+
+if (!function_exists('backupFile'))
+{
+    function backupFile()
+    {
+        if (!file_exists(SB . 'index.orig.php'))
+        {
+            @copy(SB . 'index.php', SB . 'index.orig.php');
+        }
+
+        @copy(__DIR__ . DS . 'pages' . DS . 'index.slims.php', SB . 'index.php');
+    }
+}
+
+if (!function_exists('pluginRatingUrl'))
+{
+    function pluginRatingUrl($additionalUrl = '')
+    {
+        $baseUrl = str_replace(SB, SWB, __DIR__) . DS;
+
+        return $baseUrl . $additionalUrl;
     }
 }

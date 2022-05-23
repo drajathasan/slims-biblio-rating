@@ -12,4 +12,6 @@
 $plugin = \SLiMS\Plugins::getInstance();
 
 // registering menus or hook
-$plugin->registerMenu("opac", "show_detail", __DIR__ . "/index.php");
+$plugin->registerMenu("opac", "show_detail", __DIR__ . "/pages/show_detail.inc.php");
+$plugin->registerMenu("reporting", "Rating Chart", __DIR__ . "/pages/chart.php");
+$plugin->registerMenu("reporting", "Rating Report", __DIR__ . "/pages/report.php");
