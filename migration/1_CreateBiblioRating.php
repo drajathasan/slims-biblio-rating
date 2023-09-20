@@ -14,7 +14,6 @@ class CreateBiblioRating extends \SLiMS\Migration\Migration
 {
     function up()
     {
-        backupFile();
         $SQL = <<<SQL
             CREATE TABLE IF NOT EXISTS `biblio_rating` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -27,6 +26,7 @@ class CreateBiblioRating extends \SLiMS\Migration\Migration
                 PRIMARY KEY (`id`),
                 KEY `biblio_id` (`biblio_id`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+            
             CREATE TABLE IF NOT EXISTS `biblio_rating_log` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `biblio_rating_id` int(11) NOT NULL DEFAULT 0,
